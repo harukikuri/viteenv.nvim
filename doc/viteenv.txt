@@ -1,0 +1,120 @@
+*viteenv.txt*  Inline lens for Vite environment variables
+
+==============================================================================
+CONTENTS                                                      *viteenv-contents*
+
+  1. Intro ............................... |viteenv-intro|
+  2. Requirements ........................ |viteenv-requirements|
+  3. Setup ............................... |viteenv-setup|
+  4. Commands ............................ |viteenv-commands|
+  5. Architecture & layout ............... |viteenv-architecture|
+  6. Fallback behavior ................... |viteenv-fallback|
+
+==============================================================================
+1. INTRO                                                         *viteenv-intro*
+
+viteenv.nvim shows the effective value of `import.meta.env.VITE_X` inline, per
+Vite mode. Values are resolved by the project's own Vite (via `resolveConfig` +
+`loadEnv`), so the cascade, dotenv-expand, envPrefix, mode files, and `define`
+all match what Vite actually produces at build/serve time.
+
+==============================================================================
+2. REQUIREMENTS                                           *viteenv-requirements*
+
+  - Neovim 0.10+
+  - Node.js 18+ on PATH
+  - Vite must be resolvable from the project root via Node's module
+    resolution (in node_modules from the root upward: the project's own
+    install or a hoisted one in a monorepo). The sidecar uses that Vite;
+    nothing is bundled and a global Vite is never used.
+
+==============================================================================
+3. SETUP                                                         *viteenv-setup*
+
+>lua
+    require("viteenv").setup({
+      -- see lua/viteenv/config.lua for all defaults
+      mode = nil,          -- nil = all discovered modes; a list limits them
+      filetypes = { "typescript", "typescriptreact", "vue", ... },
+    })
+<
+
+==============================================================================
+4. COMMANDS                                                   *viteenv-commands*
+
+  :ViteEnvEnable        Enable the lens in the current buffer.
+  :ViteEnvDisable       Disable the lens in the current buffer.
+  :ViteEnvToggle        Toggle the lens.
+  :ViteEnvRefresh       Force a re-resolve (bypass the sidecar mtime gate).
+  :ViteEnvMode {m...}   Limit the lens to these modes (no args = all discovered).
+  :ViteEnvRestart       Restart the Node sidecar worker.
+
+DISPLAY ~
+
+The lens is inline: end-of-line virtual text showing EVERY shown mode in a
+unified `[label ]= value` format. When all modes share a value it collapses to
+one (`= value`); when they differ it fans out (`development = … │ production =
+… │ staging = …`). Labels are the real mode names by default; abbreviate with
+`lens.mode_labels`.
+
+Annotations are aligned to a uniform column, `lens.padding` spaces (default 8)
+past the longest annotated line, so they all start at the same place regardless
+of line length. The value uses `ViteEnvValue` (default Comment); the mode label
+carries the color via `ViteEnvMode` (Type). Override any group:
+  ViteEnvValue  ViteEnvMode  ViteEnvSeparator  ViteEnvStale  ViteEnvMissing
+
+MODES ~
+
+There is no canonical mode list in Vite, so modes are always auto-discovered:
+  1. `--mode` flags in package.json scripts (and vite -> development,
+     vite build -> production) UNION .env.<mode> files
+  2. fall back to development/production only if nothing is found
+
+Set `mode` to a list to LIMIT the lens to a subset of the discovered modes:
+
+  require("viteenv").setup({ mode = { "development", "production" } })
+
+==============================================================================
+5. ARCHITECTURE & LAYOUT                                  *viteenv-architecture*
+
+Two halves: a Lua plugin (UI + orchestration) and a Node sidecar (resolution).
+
+  plugin/viteenv.lua        Load guard, user commands, autocmd bootstrap.
+
+  lua/viteenv/
+    init.lua                Public API (setup/enable/...); wires submodules.
+    config.lua              Defaults + user merge + validation.
+    project.lua             Project root detection.
+    scan.lua                Find import.meta.env.VITE_* refs in a buffer.
+    worker.lua              Sidecar lifecycle: spawn, handshake, requests,
+                            timeouts, restart/backoff, kill.
+    cache.lua               Last-good store -> graceful degradation.
+    lens.lua                Inline extmark rendering (all modes, collapse).
+    value.lua               Value masking + truncation.
+    health.lua              :checkhealth viteenv.
+    log.lua                 Leveled logging.
+
+  sidecar/
+    worker.mjs              Resident Node resolver (project's vite + mtime gate).
+    PROTOCOL.md             JSON line protocol (requests/responses/errors).
+    package.json            Marks ESM; no dependencies.
+
+  doc/viteenv.txt           This help.
+  docs/DESIGN.md            Design rationale, measured costs, and fallback
+                            policy (NOT shipped/loaded at runtime). The "why".
+
+Per-buffer data flow:
+    scan -> worker.resolve(root, mode) -> cache.put -> lens.render
+On error/worker-down: lens renders from cache.get as "stale".
+
+==============================================================================
+6. FALLBACK BEHAVIOR                                          *viteenv-fallback*
+
+Resolution failures never raise; they degrade. See docs/DESIGN.md.
+
+  - Per-request error (vite-not-found / config-eval / ...) does NOT restart the
+    worker; the lens shows last-good as stale or disables for that root.
+  - Only process failures (spawn/crash/no-response) trigger restart, with
+    exponential backoff and a circuit breaker (then :ViteEnvRestart to retry).
+
+ vim:tw=78:ts=8:ft=help:norl:
