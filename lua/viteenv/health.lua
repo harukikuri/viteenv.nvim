@@ -29,6 +29,35 @@ local function check_prereqs()
   else
     h.error("sidecar missing: " .. sidecar)
   end
+
+  -- Treesitter parsers for the configured filetypes (regex fallback otherwise).
+  local langs, seen = {}, {}
+  for _, ft in ipairs(require("viteenv.config").options.filetypes) do
+    local lang = ft
+    if vim.treesitter.language.get_lang then
+      lang = vim.treesitter.language.get_lang(ft) or ft
+    end
+    if not seen[lang] then
+      seen[lang] = true
+      langs[#langs + 1] = lang
+    end
+  end
+  local have, missing = {}, {}
+  for _, lang in ipairs(langs) do
+    if pcall(vim.treesitter.language.add, lang) then
+      have[#have + 1] = lang
+    else
+      missing[#missing + 1] = lang
+    end
+  end
+  if #missing == 0 then
+    h.ok("treesitter parsers: " .. table.concat(have, ", "))
+  else
+    h.warn("no treesitter parser for: " .. table.concat(missing, ", "), {
+      "scanning falls back to regex there (may match inside comments/strings)",
+      "install with nvim-treesitter, e.g. :TSInstall " .. table.concat(missing, " "),
+    })
+  end
 end
 
 local function check_sidecar()
