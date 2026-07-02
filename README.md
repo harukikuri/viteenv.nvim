@@ -7,14 +7,30 @@ Inline lens for Vite environment variables. Shows the **effective value** of
 
 ## How it works
 
-```
- ┌────────────┐   import.meta.env.VITE_X spotted   ┌─────────────────┐
- │  Neovim    │ ────────────────────────────────▶ │  Node sidecar    │
- │  (Lua)     │   {root, mode} request (JSON)      │  (sidecar/       │
- │            │ ◀──────────────────────────────── │   worker.mjs)    │
- │  renders   │   {env, define, ...} response      │  uses PROJECT's  │
- │  virt_text │                                    │  vite, mtime gate│
- └────────────┘                                    └─────────────────┘
+```mermaid
+graph LR
+    Buf["📄 Buffer<br/>import.meta.env.VITE_*"]
+
+    subgraph Neovim["Neovim (Lua)"]
+        Scan["scan references"]
+        Lens["render inline<br/>virt_text (per mode)"]
+    end
+
+    subgraph Sidecar["Node sidecar (worker.mjs)"]
+        Worker["resolve-all<br/>+ mtime gate"]
+    end
+
+    subgraph Project["Your project"]
+        Vite["project's Vite<br/>resolveConfig / loadEnv"]
+        Env[".env* / vite.config"]
+    end
+
+    Buf --> Scan
+    Scan -->|"{ root } request (JSON)"| Worker
+    Worker -->|"env per mode, define (JSON)"| Lens
+    Worker -.->|"resolveConfig + loadEnv"| Vite
+    Vite -.->|reads| Env
+    Env -.->|"fs change → refresh"| Scan
 ```
 
 - **Resolution is delegated to the project's Vite** (not reimplemented), so it
