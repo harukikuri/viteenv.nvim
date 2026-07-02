@@ -54,28 +54,3 @@ require("viteenv").setup({
   },
 })
 ```
-
-Inline output (only differing keys fan out per mode):
-
-```
-const name   = import.meta.env.VITE_APP_NAME;          = viteenv demo
-const apiUrl = import.meta.env.VITE_API_URL;           development = http://localhost:3000/v1 │ production = https://api.prod… │ staging = …
-```
-(annotations start at the same column regardless of line length)
-
-Annotations are **aligned to a uniform column** — `lens.padding` spaces
-(default 8) past the longest annotated line — and use their own highlight
-groups, which you can override:
-
-```vim
-hi ViteEnvValue     guifg=...   " the value (default: Comment)
-hi ViteEnvMode      guifg=...   " the mode label (Type)
-hi ViteEnvSeparator guifg=...   " the │ divider (NonText)
-hi ViteEnvStale     guifg=...   " last-good shown while refreshing
-hi ViteEnvMissing   guifg=...   " referenced VITE_X not set
-```
-
-Labels are the real mode names by default; set `lens.mode_labels` to abbreviate
-(e.g. `{ development = "dev", production = "prod" }`).
-
-See `lua/viteenv/config.lua` for all defaults.
