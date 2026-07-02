@@ -1,9 +1,7 @@
 # viteenv.nvim
 
 Inline lens for Vite environment variables. Shows the **effective value** of
-`import.meta.env.VITE_X` (per mode) right next to the reference in your source,
-resolved by your project's own Vite — so cascade, `dotenv-expand`, `envPrefix`,
-mode files, and `define` all match what Vite actually produces.
+`import.meta.env.VITE_X` per mode, resolved by your project's own Vite.
 
 ![viteenv.nvim demo](demo.png)
 
