@@ -9,7 +9,6 @@ mode files, and `define` all match what Vite actually produces.
 > collapsed to one value when all modes agree, fanned out per-mode only for keys
 > that differ. Backed by the resident sidecar; Treesitter-accurate. Approach
 > validated — see [`docs/DESIGN.md`](docs/DESIGN.md). Tests: `make test`.
-> Still TODO: `.env` watching beyond the sidecar gate.
 
 ## How it works
 
@@ -30,6 +29,8 @@ mode files, and `define` all match what Vite actually produces.
   change; unchanged queries cost ~0.02 ms.
 - **Failures are structured**, and the plugin degrades gracefully (stale / off)
   instead of erroring.
+- **Live** — a filesystem watcher refreshes the lens when `.env*` /
+  `vite.config` change, no keypress needed.
 
 ## Architecture / layout
 

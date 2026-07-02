@@ -91,6 +91,7 @@ Two halves: a Lua plugin (UI + orchestration) and a Node sidecar (resolution).
     cache.lua               Last-good store -> graceful degradation.
     lens.lua                Inline extmark rendering (all modes, collapse).
     value.lua               Value masking + truncation.
+    watch.lua               Filesystem watcher (live refresh on .env changes).
     health.lua              :checkhealth viteenv.
     log.lua                 Leveled logging.
 

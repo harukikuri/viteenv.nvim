@@ -21,6 +21,7 @@ local scan = require("viteenv.scan")
 local lens = require("viteenv.lens")
 local cache = require("viteenv.cache")
 local worker = require("viteenv.worker")
+local watch = require("viteenv.watch")
 local log = require("viteenv.log")
 
 local DEBOUNCE_MS = 150
@@ -55,9 +56,23 @@ local function prefixes_of(payload)
   return p or { "VITE_" }
 end
 
+local do_refresh -- forward declaration (watcher callback calls it)
+
+-- Re-render every attached buffer belonging to `root` (used by the watcher).
+local function refresh_root(root)
+  for bufnr, st in pairs(bufs) do
+    if st.attached and vim.api.nvim_buf_is_valid(bufnr) then
+      local name = vim.api.nvim_buf_get_name(bufnr)
+      if name ~= "" and project.root_for(name) == root then
+        do_refresh(bufnr, false) -- gate decides if a real re-resolve is needed
+      end
+    end
+  end
+end
+
 ---@param bufnr integer
 ---@param force boolean|nil
-local function do_refresh(bufnr, force)
+function do_refresh(bufnr, force)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end
@@ -84,6 +99,12 @@ local function do_refresh(bufnr, force)
     if res.ok then
       cache.put(root, "*all", res)
       lens.render_modes(bufnr, cur, res.modeList, res.modes, { prefixes = prefixes_of(res) })
+      -- watch this project's env inputs so edits refresh the lens live
+      local dirs = { root }
+      if res.envDir and res.envDir ~= root then
+        dirs[#dirs + 1] = res.envDir
+      end
+      watch.ensure(root, dirs, refresh_root)
     else
       log.debug("resolve failed: " .. ((res.error and res.error.kind) or "?"))
       local kind = res.error and res.error.kind
@@ -159,6 +180,7 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("VimLeavePre", {
     group = aug,
     callback = function()
+      watch.stop_all()
       worker.shutdown()
     end,
   })
