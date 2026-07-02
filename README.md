@@ -10,7 +10,6 @@ mode files, and `define` all match what Vite actually produces.
 > that differ. Backed by the resident sidecar; Treesitter-accurate. Approach
 > validated — see [`docs/DESIGN.md`](docs/DESIGN.md). Tests: `make test`.
 > Still TODO: `.env` watching beyond the sidecar gate.
-> Try it against [`examples/react-app`](examples/react-app).
 
 ## How it works
 

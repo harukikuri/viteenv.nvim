@@ -25,7 +25,7 @@ Exits nonzero if any spec fails (CI-friendly).
 | `scan_spec` | unit | comment/string test skips without a `typescript` parser |
 | `project_spec` | unit | — |
 | `lens_spec` | unit | — |
-| `worker_spec` | integration | `node` + `npm install` in `examples/react-app` (else skipped) |
+| `worker_spec` | integration | `node` + a local `examples/react-app` Vite app (else skipped) |
 
 Integration specs auto-skip when the example app isn't installed, so the unit
 suite always runs.
