@@ -3,7 +3,7 @@
 Inline lens for Vite environment variables. Shows the **effective value** of
 `import.meta.env.VITE_X` per mode, resolved by your project's own Vite.
 
-![viteenv.nvim demo](demo.png)
+![viteenv.nvim demo](assets/demo.png)
 
 ## How it works
 
