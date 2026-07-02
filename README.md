@@ -5,11 +5,6 @@ Inline lens for Vite environment variables. Shows the **effective value** of
 resolved by your project's own Vite — so cascade, `dotenv-expand`, `envPrefix`,
 mode files, and `define` all match what Vite actually produces.
 
-> Status: **working.** Inline end-of-line text shows every Vite mode —
-> collapsed to one value when all modes agree, fanned out per-mode only for keys
-> that differ. Backed by the resident sidecar; Treesitter-accurate. Approach
-> validated — see [`docs/DESIGN.md`](docs/DESIGN.md). Tests: `make test`.
-
 ## How it works
 
 ```
@@ -32,18 +27,6 @@ mode files, and `define` all match what Vite actually produces.
 - **Live** — a filesystem watcher refreshes the lens when `.env*` /
   `vite.config` change, no keypress needed.
 
-## Architecture / layout
-
-See [`doc/viteenv.txt`](doc/viteenv.txt) for the full map. In short:
-
-| Path | Role |
-|---|---|
-| `lua/viteenv/` | the plugin (config, inline lens, worker client, scan, cache) |
-| `plugin/viteenv.lua` | load guard, commands, autocmds |
-| `sidecar/worker.mjs` | the validated Node resolver (resident worker + gate) |
-| `sidecar/PROTOCOL.md` | the JSON line protocol between Lua and the sidecar |
-| `docs/DESIGN.md` | design rationale + measured costs (not shipped at runtime) |
-
 ## Requirements
 
 - Neovim 0.10+ (extmarks / `vim.system`)
@@ -53,13 +36,10 @@ See [`doc/viteenv.txt`](doc/viteenv.txt) for the full map. In short:
   project's own install, or a hoisted one in a monorepo). The sidecar uses that
   Vite; nothing is bundled, and a global Vite is never used.
 
-Run **`:checkhealth viteenv`** to verify Node, the sidecar handshake, your
-current project's Vite resolution, and that the filesystem watcher works.
-
-## Install (lazy.nvim) — placeholder
+## Installation
 
 ```lua
-{ "kuri-sun/viteenv.nvim", opts = {} }
+{ "harukikuri/viteenv.nvim", opts = {} }
 ```
 
 ## Configuration
@@ -74,18 +54,6 @@ require("viteenv").setup({
   },
 })
 ```
-
-### Which modes are shown?
-
-Vite has no canonical mode list (a mode is just a `--mode` string), so modes are
-**always auto-discovered**:
-
-- `--mode` flags in your `package.json` scripts (and `vite`→`development`,
-  `vite build`→`production`) **∪** your `.env.<mode>` files.
-- fallback to `development` / `production` only if nothing is found.
-
-Set `mode` to a list to **limit** the lens to a subset of those (or use
-`:ViteEnvMode development production`); leave it `nil` to show them all.
 
 Inline output (only differing keys fan out per mode):
 
