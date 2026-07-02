@@ -1,0 +1,10 @@
+{
+  "name": "viteenv-sidecar",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Node sidecar that resolves Vite env via the project's own Vite. No dependencies — uses the target project's vite + Node stdlib.",
+  "bin": {
+    "viteenv-worker": "./worker.mjs"
+  }
+}
