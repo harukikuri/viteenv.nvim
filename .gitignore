@@ -1,0 +1,13 @@
+# node
+node_modules/
+*.log
+
+# editor / os
+.DS_Store
+*.swp
+
+# nvim test/scratch
+.tests/
+
+# local tooling
+.claude/settings.local.json
