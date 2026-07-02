@@ -5,6 +5,8 @@ Inline lens for Vite environment variables. Shows the **effective value** of
 resolved by your project's own Vite — so cascade, `dotenv-expand`, `envPrefix`,
 mode files, and `define` all match what Vite actually produces.
 
+![viteenv.nvim demo](demo.png)
+
 ## How it works
 
 ```
