@@ -44,13 +44,47 @@ mode files, and `define` all match what Vite actually produces.
 
 ## Configuration
 
+Defaults shown; pass only what you want to override.
+
 ```lua
 require("viteenv").setup({
-  mode = nil,   -- nil = show all discovered modes; a list limits them,
-                --   e.g. { "development", "production" }
+  -- Filetypes the lens attaches to.
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte" },
+
+  -- Limit which modes are shown. nil / empty = every auto-discovered mode
+  -- (package.json `--mode` scripts + `.env.<mode>` files). A list filters that
+  -- set, e.g. { "development", "production" }.
+  mode = nil,
+
+  -- Inline rendering (end-of-line virtual text showing every shown mode).
   lens = {
-    collapse = true, -- one value when all modes agree; per-mode when they differ
-    -- mode_labels = { development = "dev", production = "prod" }, -- optional
+    collapse = true,       -- when all shown modes share a value, show it once
+    padding = 8,           -- spaces between end of code and the annotation
+    prefix = "= ",         -- separator before a single/collapsed value
+    separator = " │ ",     -- divider between modes when they differ
+    max_value_len = 60,    -- truncate a single/collapsed value
+    mode_value_len = 32,   -- truncate each value in the per-mode (differing) view
+    mask = { "SECRET", "TOKEN", "PASSWORD", "PRIVATE" }, -- substrings -> value masked
+    mode_labels = {},      -- e.g. { development = "dev", production = "prod" }
+    highlights = {         -- plugin's own groups; override with :hi or repoint
+      value = "ViteEnvValue",
+      mode = "ViteEnvMode",
+      separator = "ViteEnvSeparator",
+      stale = "ViteEnvStale",       -- last-good shown while refreshing
+      missing = "ViteEnvMissing",   -- referenced VITE_X not set
+    },
   },
+
+  -- Node sidecar.
+  sidecar = {
+    node_path = nil,       -- absolute path to node; nil = "node" on PATH
+    startup_timeout_ms = 5000,
+    request_timeout_ms = 10000,
+    restart_backoff_ms = { 200, 400, 800, 1600, 3200 },
+    max_restarts = 5,      -- consecutive failures before the breaker trips
+    healthy_reset_ms = 10000,
+  },
+
+  log_level = "warn",      -- "trace"|"debug"|"info"|"warn"|"error"|"off"
 })
 ```
