@@ -1,6 +1,6 @@
 -- lua/viteenv/worker.lua
 -- Client + lifecycle manager for the Node sidecar (sidecar/worker.mjs).
--- See docs/DESIGN.md (Failure handling).
+-- Handles the sidecar process lifecycle and request/response correlation.
 --
 -- Lifecycle (status):
 --   down      idle, no process; next request spawns one

@@ -18,7 +18,7 @@ mode files, and `define` all match what Vite actually produces.
 ```
 
 - **Resolution is delegated to the project's Vite** (not reimplemented), so it
-  stays correct across Vite versions. (`docs/DESIGN.md`)
+  stays correct across Vite versions.
 - A **resident worker** keeps Vite imported once; warm resolves cost ~2–7 ms.
 - An **mtime gate** re-resolves only when `vite.config` / `.env*` actually
   change; unchanged queries cost ~0.02 ms.

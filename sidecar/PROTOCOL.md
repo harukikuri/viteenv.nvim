@@ -81,14 +81,14 @@ Response adds `modeList` and `modes`:
 ```
 
 `error.kind`:
-| kind | meaning | Lua action (see docs/DESIGN.md) |
+| kind | meaning | Lua action |
 |---|---|---|
 | `vite-not-found` | no Vite resolvable from `root` (permanent) | disable lens for this root; do **not** restart worker |
 | `config-eval` | `vite.config` / a plugin threw (often transient, mid-edit) | show last-good as stale; auto-recovers on next change |
 | `bad-vite-api` | resolved Vite lacks expected API | disable + notify (upgrade) |
 | `unknown` | anything else / bad request JSON | log; treat as transient |
 
-## Behavior notes (validated; see `docs/DESIGN.md`)
+## Behavior notes
 
 - The worker resolves the **project's** Vite from `root` (monorepo-safe), not a
   global one.

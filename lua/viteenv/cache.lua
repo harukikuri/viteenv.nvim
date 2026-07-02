@@ -1,8 +1,8 @@
 -- lua/viteenv/cache.lua
--- Neovim-side "last-good" store. This is the FOUNDATION of graceful degradation
--- (docs/DESIGN.md (display tiers)): the sidecar's own cache dies with the process, so we keep a
--- copy here of every successful resolve. When the worker is down/restarting or a
--- request fails, the lens renders from here, marked "stale".
+-- Neovim-side "last-good" store — the foundation of graceful degradation: the
+-- sidecar's own cache dies with the process, so we keep a copy here of every
+-- successful resolve. When the worker is down/restarting or a request fails, the
+-- lens renders from here, marked "stale".
 --
 -- Keyed by (root, mode). Value = the last successful resolve payload + a
 -- timestamp. No eviction needed at this scale (a handful of roots/modes).

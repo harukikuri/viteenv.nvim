@@ -249,7 +249,7 @@ function M.set_mode(modes)
   end
 end
 
---- Restart the Node sidecar (manual recovery; see docs/DESIGN.md).
+--- Restart the Node sidecar (manual recovery).
 function M.restart_worker()
   worker.restart()
   M.refresh({ force = true })

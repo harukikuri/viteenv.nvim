@@ -104,8 +104,6 @@ Two halves: a Lua plugin (UI + orchestration) and a Node sidecar (resolution).
     package.json            Marks ESM; no dependencies.
 
   doc/viteenv.txt           This help.
-  docs/DESIGN.md            Design rationale, measured costs, and fallback
-                            policy (NOT shipped/loaded at runtime). The "why".
 
 Per-buffer data flow:
     scan -> worker.resolve(root, mode) -> cache.put -> lens.render
@@ -114,7 +112,7 @@ On error/worker-down: lens renders from cache.get as "stale".
 ==============================================================================
 6. FALLBACK BEHAVIOR                                          *viteenv-fallback*
 
-Resolution failures never raise; they degrade. See docs/DESIGN.md.
+Resolution failures never raise; they degrade.
 
   - Per-request error (vite-not-found / config-eval / ...) does NOT restart the
     worker; the lens shows last-good as stale or disables for that root.
