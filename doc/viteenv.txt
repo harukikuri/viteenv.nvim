@@ -49,6 +49,9 @@ all match what Vite actually produces at build/serve time.
   :ViteEnvMode {m...}   Limit the lens to these modes (no args = all discovered).
   :ViteEnvRestart       Restart the Node sidecar worker.
 
+Run `:checkhealth viteenv` to verify Node, the sidecar handshake, the current
+project's Vite resolution, and the filesystem watcher.
+
 DISPLAY ~
 
 The lens is inline: end-of-line virtual text showing EVERY shown mode in a

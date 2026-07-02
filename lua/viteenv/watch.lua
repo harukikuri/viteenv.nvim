@@ -103,4 +103,15 @@ function M.is_watching(root)
   return watched[root] ~= nil
 end
 
+--- List currently watched roots (sorted). For :checkhealth.
+---@return string[]
+function M.list()
+  local out = {}
+  for root in pairs(watched) do
+    out[#out + 1] = root
+  end
+  table.sort(out)
+  return out
+end
+
 return M

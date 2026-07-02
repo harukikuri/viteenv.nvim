@@ -53,6 +53,9 @@ See [`doc/viteenv.txt`](doc/viteenv.txt) for the full map. In short:
   project's own install, or a hoisted one in a monorepo). The sidecar uses that
   Vite; nothing is bundled, and a global Vite is never used.
 
+Run **`:checkhealth viteenv`** to verify Node, the sidecar handshake, your
+current project's Vite resolution, and that the filesystem watcher works.
+
 ## Install (lazy.nvim) — placeholder
 
 ```lua

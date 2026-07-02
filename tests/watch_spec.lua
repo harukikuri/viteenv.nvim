@@ -26,8 +26,10 @@ describe("watch", function()
     watch.ensure("r2", { d }, function()
       fired = fired + 1
     end)
+    ok(vim.tbl_contains(watch.list(), "r2"), "list() includes an active root")
     watch.stop("r2")
     ok(not watch.is_watching("r2"), "stopped")
+    ok(not vim.tbl_contains(watch.list(), "r2"), "list() drops a stopped root")
 
     vim.wait(80, function() return false end, 10)
     H.write(d .. "/.env", "A=2\n")
